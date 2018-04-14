@@ -1,0 +1,12 @@
+<div class="time-convert">
+  <div class="original"><%= @datetime %></div>
+  <div class="text">
+    <div class="logo">
+      <span class="in">in</span>
+      <span class="my">my</span>
+      <span class="time">ti.me</span>
+    </div>
+    <span class="is">is</span>
+  </h1>
+  <div class="converted"><%= @converted %></div>
+</div>

@@ -1,0 +1,7 @@
+<div>
+  <h1>in my ti.me</h1>
+  <h4>the time is</h4>
+  <h3>12:13:01 PM</h3>
+  <h4>at</h4>
+  <h3><%= @datetime %></h3>
+</div>

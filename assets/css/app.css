@@ -1,0 +1,39 @@
+/* This file is for your main application css. */
+body {
+  height: 100vh;
+  width: 100vw;
+  background-color: #54577C;
+  color: #fafafa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.time-convert {
+  background-color: #3E405B;
+  padding: 16px;
+}
+
+.time-convert > .original {
+  font-size: 48px;
+}
+
+.time-convert > .text {
+  font-size: 38px;
+}
+
+.text > .logo {
+  display: inline-table;
+}
+
+.logo > .in {
+  background-color: #515860;
+}
+
+.logo > .my {
+  background-color: #5D849F;
+}
+
+.logo > .time {
+  background-color: #81ACCD;
+}
