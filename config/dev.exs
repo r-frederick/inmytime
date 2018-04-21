@@ -41,6 +41,16 @@ config :inmytime, InmytimeWeb.Endpoint,
     ]
   ]
 
+# Geolix Configuration
+config :geolix,
+  databases: [
+    %{
+      id: :city,
+      adapter: Geolix.Adapter.MMDB2,
+      source: "../geoip/GeoLite2-City.mmdb"
+    }
+  ]
+
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
 

@@ -9,9 +9,10 @@ defmodule Inmytime.Application do
     # Define workers and child supervisors to be supervised
     children = [
       # Start the endpoint when the application starts
-      supervisor(InmytimeWeb.Endpoint, []),
+      supervisor(InmytimeWeb.Endpoint, [])
       # Start your own worker by calling: Inmytime.Worker.start_link(arg1, arg2, arg3)
       # worker(Inmytime.Worker, [arg1, arg2, arg3]),
+      # supervisor(Geolix.Supervisor, [])
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

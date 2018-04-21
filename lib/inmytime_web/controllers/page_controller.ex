@@ -2,6 +2,8 @@ defmodule InmytimeWeb.PageController do
   use InmytimeWeb, :controller
   use Timex
 
+  require Logger
+
   def index(conn, _params) do
     {:ok, datetime} = Timex.now() |> format_datetime()
 
@@ -12,14 +14,26 @@ defmodule InmytimeWeb.PageController do
   end
 
   def at_time(conn, %{"timestamp" => timestamp}) do
-    {:ok, datetime} = Timex.parse!(timestamp, "{s-epoch}") |> format_datetime()
+    case Integer.parse(timestamp) do
+      {_, ""} ->
+        parsed_time = Timex.parse!(timestamp, "{s-epoch}")
 
-    {:ok, converted} =
-      Timex.parse!(timestamp, "{s-epoch}")
-      |> Timex.to_datetime(local_from_conn(conn))
-      |> format_datetime()
+        {:ok, datetime} = parsed_time |> format_datetime()
 
-    render(conn, "index.html", datetime: datetime, converted: converted)
+        {:ok, converted} =
+          parsed_time
+          |> Timex.to_datetime(local_from_conn(conn))
+          |> format_datetime()
+
+        render(conn, "index.html", datetime: datetime, converted: converted)
+
+      _ ->
+        redirect(conn, to: "/")
+    end
+  end
+
+  def at_time(conn, _) do
+    redirect(conn, to: "/")
   end
 
   defp format_datetime(datetime) do
@@ -27,10 +41,12 @@ defmodule InmytimeWeb.PageController do
   end
 
   defp local_from_conn(conn) do
-    case GeoIP.lookup(conn) do
-      {:ok, %GeoIP.Location{time_zone: nil}} -> "Etc/UTC"
-      {:ok, %GeoIP.Location{time_zone: time_zone}} -> time_zone
-      {:error, _} -> "Etc/UTC"
+    Logger.info("#{inspect(conn.remote_ip)}")
+    # Logger.info "#{inspect(GeoIP.lookup(conn.remote_ip))}"
+
+    case Geolix.lookup(conn.remote_ip) do
+      %{city: %{location: %{time_zone: tz}}} -> tz
+      _ -> "Etc/UTC"
     end
   end
 end

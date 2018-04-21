@@ -15,7 +15,11 @@ use Mix.Config
 # which you typically run after static files are built.
 config :inmytime, InmytimeWeb.Endpoint,
   load_from_system_env: true,
-  url: [host: "example.com", port: 80],
+  http: [:inet4, port: "${PORT}"],
+  url: [host: "inmyti.me", port: 80],
+  check_origin: false,
+  server: true,
+  root: ".",
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 # Do not print debug messages in production
@@ -45,6 +49,16 @@ config :logger, level: :info
 #       force_ssl: [hsts: true]
 #
 # Check `Plug.SSL` for all available options in `force_ssl`.
+
+# Geolix Configuration
+config :geolix,
+  databases: [
+    %{
+      id: :city,
+      adapter: Geolix.Adapter.MMDB2,
+      source: "/geoip/GeoLite2-City.mmdb"
+    }
+  ]
 
 # ## Using releases
 #

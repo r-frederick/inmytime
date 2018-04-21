@@ -39,7 +39,8 @@ defmodule Inmytime.Mixfile do
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:timex, "~> 3.1"},
-      {:geoip, "~> 0.1"}
+      {:geolix, "~> 0.16"},
+      {:distillery, "~> 1.5"}
     ]
   end
 end
