@@ -42,7 +42,6 @@ defmodule InmytimeWeb.PageController do
 
   defp local_from_conn(conn) do
     Logger.info("#{inspect(conn.remote_ip)}")
-    # Logger.info "#{inspect(GeoIP.lookup(conn.remote_ip))}"
 
     case Geolix.lookup(conn.remote_ip) do
       %{city: %{location: %{time_zone: tz}}} -> tz
