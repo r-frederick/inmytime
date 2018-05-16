@@ -1,31 +1,22 @@
 defmodule InmytimeWeb.PageController do
   use InmytimeWeb, :controller
   use Timex
-
-  require Logger
+  alias Inmytime.Timebot
 
   def index(conn, _params) do
-    {:ok, datetime} = Timex.now() |> format_datetime()
+    client_tz = Timebot.find_tz(conn.remote_ip)
 
-    {:ok, converted} =
-      Timex.now() |> Timex.to_datetime(local_from_conn(conn)) |> format_datetime()
+    {:ok, digest} = Timebot.digest_now(client_tz)
 
-    render(conn, "index.html", datetime: datetime, converted: converted)
+    render(conn, "index.html", datetime: digest.datetime, converted: digest.converted)
   end
 
   def at_time(conn, %{"timestamp" => timestamp}) do
-    case Integer.parse(timestamp) do
-      {_, ""} ->
-        parsed_time = Timex.parse!(timestamp, "{s-epoch}")
+    client_tz = Timebot.find_tz(conn.remote_ip)
 
-        {:ok, datetime} = parsed_time |> format_datetime()
-
-        {:ok, converted} =
-          parsed_time
-          |> Timex.to_datetime(local_from_conn(conn))
-          |> format_datetime()
-
-        render(conn, "index.html", datetime: datetime, converted: converted)
+    case Timebot.digest(timestamp, client_tz) do
+      {:ok, digest} ->
+        render(conn, "index.html", datetime: digest.datetime, converted: digest.converted)
 
       _ ->
         redirect(conn, to: "/")
@@ -36,16 +27,23 @@ defmodule InmytimeWeb.PageController do
     redirect(conn, to: "/")
   end
 
-  defp format_datetime(datetime) do
-    Timex.format(datetime, "{0M}/{0D}/{YYYY} @ {h12}:{m}{am} {Zabbr}")
+  def convert_time(conn, %{"timestamp" => timestamp, "region" => region, "subregion" => subregion}) do
+    case Timebot.digest(timestamp, "#{region}/#{subregion}") do
+      {:ok, digest} ->
+        render(conn, "index.html", datetime: digest.datetime, converted: digest.converted)
+
+      _ ->
+        redirect(conn, to: "/")
+    end
   end
 
-  defp local_from_conn(conn) do
-    Logger.info("#{inspect(conn.remote_ip)}")
+  def convert_time(conn, %{"timestamp" => timestamp, "timezone" => timezone}) do
+    case Timebot.digest(timestamp, timezone) do
+      {:ok, digest} ->
+        render(conn, "index.html", datetime: digest.datetime, converted: digest.converted)
 
-    case Geolix.lookup(conn.remote_ip) do
-      %{city: %{location: %{time_zone: tz}}} -> tz
-      _ -> "Etc/UTC"
+      _ ->
+        redirect(conn, to: "/")
     end
   end
 end

@@ -15,9 +15,21 @@ defmodule InmytimeWeb.PageControllerTest do
     assert html_response(conn, 200) =~ "05/15/2018 @ 8:00pm CDT"
   end
 
-  test "GET /malformedorinvalideinput redirects to the current timestamp", %{conn: conn} do
+  test "GET /malformedorinvalidinput redirects to the current timestamp", %{conn: conn} do
     conn = get conn, "/malformedorinvalidinput"
 
     assert html_response(conn, 302)
+  end
+
+  test "GET /1526432420/in/pdt returns a timestamp represented in both UTC and PDT", %{conn: conn} do
+    conn = get conn, "/1526432420/in/PDT"
+
+    assert html_response(conn, 200) =~ "05/15/2018 @ 6:00pm PDT"
+  end
+
+  test "GET /1526432420/in/America/New_York returns a timestamp represented in both UTC and EDT", %{conn: conn} do
+    conn = get conn, "/1526432420/in/America/New_York"
+
+    assert html_response(conn, 200) =~ "05/15/2018 @ 9:00pm EDT"
   end
 end

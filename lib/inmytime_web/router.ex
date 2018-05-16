@@ -19,6 +19,8 @@ defmodule InmytimeWeb.Router do
 
     get "/", PageController, :index
     get "/:timestamp", PageController, :at_time
+    get "/:timestamp/in/:timezone", PageController, :convert_time
+    get "/:timestamp/in/:region/:subregion", PageController, :convert_time
   end
 
   # Other scopes may use custom stacks.
