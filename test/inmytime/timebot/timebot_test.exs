@@ -10,6 +10,22 @@ defmodule Inmytime.TimebotTest do
 
       assert result == {:ok, %{datetime: "05/16/2018 @ 1:00am UTC", converted: "05/15/2018 @ 8:00pm CDT"}}
     end
+
+    test "handles negative values as their 'absolute' value" do
+      with {:ok, %{datetime: d1}} <- Timebot.digest("-1", "America/Chicago"),
+           {:ok, %{datetime: d2}} <- Timebot.digest("1", "America/Chicago")
+      do
+        assert d1 == d2
+      end
+    end
+
+    test "limits the maximum timestamp to 11 digits" do
+      with {:ok, %{datetime: d1}} <- Timebot.digest("99999999999", "America/Chicago"),
+           {:ok, %{datetime: d2}} <- Timebot.digest("99999999999999", "America/Chicago")
+      do
+        assert d1 == d2
+      end
+    end
   end
 
   describe "digest_now/1" do
@@ -31,11 +47,11 @@ defmodule Inmytime.TimebotTest do
     end
   end
 
-  describe "find_tz/1" do
+  describe "geolocate_ip/1" do
     test "guesstimates a timezone based on a given ip tuple" do
       result =
         {192, 227, 139, 106}
-        |> Timebot.find_tz
+        |> Timebot.geolocate_ip
 
       assert result == "America/Chicago"
     end
@@ -43,9 +59,21 @@ defmodule Inmytime.TimebotTest do
     test "defaults to Etc/UTC" do
       result =
         {0, 0, 0, 0}
-        |> Timebot.find_tz
+        |> Timebot.geolocate_ip
 
       assert result == "Etc/UTC"
+    end
+  end
+
+  describe "find_tz/1" do
+    test "returns proper-cased IANA timezone for the given input" do
+      with result1 <- Timebot.find_tz("AMERICA/Chicago"),
+           result2 <- Timebot.find_tz("america/chicago"),
+           result3 <- Timebot.find_tz("America/Chicago")
+      do
+        assert result1 == result2
+        assert result2 == result3
+      end
     end
   end
 end
