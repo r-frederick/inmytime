@@ -10,6 +10,22 @@ defmodule Inmytime.TimebotTest do
 
       assert result == {:ok, %{datetime: "05/16/2018 @ 1:00am UTC", converted: "05/15/2018 @ 8:00pm CDT"}}
     end
+
+    test "handles negative values as their 'absolute' value" do
+      with {:ok, %{datetime: d1}} <- Timebot.digest("-1", "America/Chicago"),
+           {:ok, %{datetime: d2}} <- Timebot.digest("1", "America/Chicago")
+      do
+        assert d1 == d2
+      end
+    end
+
+    test "limits the maximum timestamp to 11 digits" do
+      with {:ok, %{datetime: d1}} <- Timebot.digest("99999999999", "America/Chicago"),
+           {:ok, %{datetime: d2}} <- Timebot.digest("99999999999999", "America/Chicago")
+      do
+        assert d1 == d2
+      end
+    end
   end
 
   describe "digest_now/1" do

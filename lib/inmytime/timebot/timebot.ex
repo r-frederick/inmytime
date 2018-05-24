@@ -2,7 +2,11 @@ defmodule Inmytime.Timebot do
   def digest(timestamp, timezone) do
     case Integer.parse(timestamp) do
       {_, ""} ->
-        parsed_time = Timex.parse!(timestamp, "{s-epoch}")
+        parsed_time =
+          timestamp
+          |> String.replace("-", "") # Get 'absolute' value of timestamp string
+          |> String.slice(0, 11) # Truncate timestamp as Timex might have issues with long timestamps
+          |> Timex.parse!("{s-epoch}")
 
         {:ok, datetime} = parsed_time |> format
 
