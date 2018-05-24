@@ -8,14 +8,13 @@ defmodule Inmytime.Timebot do
           |> String.slice(0, 11) # Truncate timestamp as Timex might have issues with long timestamps
           |> Timex.parse!("{s-epoch}")
 
-        {:ok, datetime} = parsed_time |> format
-
-        {:ok, converted} =
-          parsed_time
-          |> Timex.to_datetime(timezone)
-          |> format
-
-        {:ok, %{datetime: datetime, converted: converted}}
+        with {:ok, datetime} <- format(parsed_time),
+             {:ok, converted} <- format(Timex.to_datetime(parsed_time, timezone))
+        do
+          {:ok, %{datetime: datetime, converted: converted}}
+        else
+          _ -> {:error}
+        end
 
       _ ->
         {:error}

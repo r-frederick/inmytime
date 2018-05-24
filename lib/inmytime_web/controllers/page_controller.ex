@@ -35,17 +35,19 @@ defmodule InmytimeWeb.PageController do
         render(conn, "index.html", datetime: digest.datetime, converted: digest.converted)
 
       _ ->
-        redirect(conn, to: "/")
+        redirect(conn, to: "/#{timestamp}")
     end
   end
 
   def convert_time(conn, %{"timestamp" => timestamp, "timezone" => timezone}) do
-    case Timebot.digest(timestamp, timezone) do
+    upcased_timezone = String.upcase timezone
+
+    case Timebot.digest(timestamp, upcased_timezone) do
       {:ok, digest} ->
         render(conn, "index.html", datetime: digest.datetime, converted: digest.converted)
 
       _ ->
-        redirect(conn, to: "/")
+        redirect(conn, to: "/#{timestamp}")
     end
   end
 end
