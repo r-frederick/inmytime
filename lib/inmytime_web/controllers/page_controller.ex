@@ -4,7 +4,7 @@ defmodule InmytimeWeb.PageController do
   alias Inmytime.Timebot
 
   def index(conn, _params) do
-    client_tz = Timebot.find_tz(conn.remote_ip)
+    client_tz = Timebot.geolocate_ip(conn.remote_ip)
 
     {:ok, digest} = Timebot.digest_now(client_tz)
 
@@ -12,7 +12,7 @@ defmodule InmytimeWeb.PageController do
   end
 
   def at_time(conn, %{"timestamp" => timestamp}) do
-    client_tz = Timebot.find_tz(conn.remote_ip)
+    client_tz = Timebot.geolocate_ip(conn.remote_ip)
 
     case Timebot.digest(timestamp, client_tz) do
       {:ok, digest} ->
@@ -28,7 +28,9 @@ defmodule InmytimeWeb.PageController do
   end
 
   def convert_time(conn, %{"timestamp" => timestamp, "region" => region, "subregion" => subregion}) do
-    case Timebot.digest(timestamp, "#{region}/#{subregion}") do
+    timezone = Timebot.find_tz("#{region}/#{subregion}")
+
+    case Timebot.digest(timestamp, timezone) do
       {:ok, digest} ->
         render(conn, "index.html", datetime: digest.datetime, converted: digest.converted)
 

@@ -31,7 +31,7 @@ defmodule Inmytime.Timebot do
     {:ok, %{datetime: datetime, converted: converted}}
   end
 
-  def find_tz({_, _, _, _} = ip) do
+  def geolocate_ip({_, _, _, _} = ip) do
     case Geolix.lookup(ip) do
       %{city: %{location: %{time_zone: tz}}} -> tz
       _ -> "Etc/UTC"
@@ -40,5 +40,10 @@ defmodule Inmytime.Timebot do
 
   def format(datetime) do
     Timex.format(datetime, "{0M}/{0D}/{YYYY} @ {h12}:{m}{am} {Zabbr}")
+  end
+
+  def find_tz(timezone) do
+    Timex.timezones
+      |> Enum.find(fn tz -> String.downcase(tz) == String.downcase(timezone) end)
   end
 end

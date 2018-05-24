@@ -47,11 +47,11 @@ defmodule Inmytime.TimebotTest do
     end
   end
 
-  describe "find_tz/1" do
+  describe "geolocate_ip/1" do
     test "guesstimates a timezone based on a given ip tuple" do
       result =
         {192, 227, 139, 106}
-        |> Timebot.find_tz
+        |> Timebot.geolocate_ip
 
       assert result == "America/Chicago"
     end
@@ -59,9 +59,21 @@ defmodule Inmytime.TimebotTest do
     test "defaults to Etc/UTC" do
       result =
         {0, 0, 0, 0}
-        |> Timebot.find_tz
+        |> Timebot.geolocate_ip
 
       assert result == "Etc/UTC"
+    end
+  end
+
+  describe "find_tz/1" do
+    test "returns proper-cased IANA timezone for the given input" do
+      with result1 <- Timebot.find_tz("AMERICA/Chicago"),
+           result2 <- Timebot.find_tz("america/chicago"),
+           result3 <- Timebot.find_tz("America/Chicago")
+      do
+        assert result1 == result2
+        assert result2 == result3
+      end
     end
   end
 end
