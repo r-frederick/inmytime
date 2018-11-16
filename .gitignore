@@ -1,3 +1,6 @@
+.idea/
+geoip/
+
 # App artifacts
 /_build
 /db

@@ -18,8 +18,11 @@ defmodule InmytimeWeb.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
+    get "/now", PageController, :index
     get "/:timestamp", PageController, :at_time
+    get "/now/in/:timezone", PageController, :convert_now
     get "/:timestamp/in/:timezone", PageController, :convert_time
+    get "/now/in/:region/:subregion", PageController, :convert_now
     get "/:timestamp/in/:region/:subregion", PageController, :convert_time
   end
 

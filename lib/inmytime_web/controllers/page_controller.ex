@@ -27,6 +27,30 @@ defmodule InmytimeWeb.PageController do
     redirect(conn, to: "/")
   end
 
+  def convert_now(conn, %{"region" => region, "subregion" => subregion}) do
+    timezone = Timebot.find_tz("#{region}/#{subregion}")
+
+    case Timebot.digest_now(timezone) do
+      {:ok, digest} ->
+        render(conn, "index.html", datetime: digest.datetime, converted: digest.converted)
+
+      _ ->
+        redirect(conn, to: "/now")
+    end
+  end
+
+  def convert_now(conn, %{"timezone" => timezone}) do
+    upcased_timezone = String.upcase timezone
+
+    case Timebot.digest_now(upcased_timezone) do
+      {:ok, digest} ->
+        render(conn, "index.html", datetime: digest.datetime, converted: digest.converted)
+
+      _ ->
+        redirect(conn, to: "/now")
+    end
+  end
+
   def convert_time(conn, %{"timestamp" => timestamp, "region" => region, "subregion" => subregion}) do
     timezone = Timebot.find_tz("#{region}/#{subregion}")
 

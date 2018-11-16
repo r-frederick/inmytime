@@ -21,6 +21,12 @@ defmodule InmytimeWeb.PageControllerTest do
     assert html_response(conn, 302)
   end
 
+  test "GET /now returns a 200", %{conn: conn} do
+    conn = get conn, "/now"
+
+    assert html_response(conn, 200)
+  end
+
   test "GET /1526432420/in/pdt returns a timestamp represented in both UTC and PDT", %{conn: conn} do
     conn = get conn, "/1526432420/in/PDT"
 
